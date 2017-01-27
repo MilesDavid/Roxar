@@ -2,12 +2,16 @@
 #define _USE_MATH_DEFINES
 
 #include <cmath>
+#include <cstdio>
+
 #include <vector>
 #include <fstream>
 #include <string>
 
 #include <boost\algorithm\string.hpp>
 
+typedef std::vector<std::string> Vecs;
+typedef std::vector<double> Vecd;
 typedef std::vector<std::vector<double>> VecOfVecd;
 
 /*
@@ -23,6 +27,6 @@ public:
 
 	static VecOfVecd parseFile(const std::string &path, const std::string &delims="\t :");
 	static VecOfVecd calculate(VecOfVecd &surveyData);
-	static void writeFile(const std::string &path, VecOfVecd &wellTrajectory);
+	static bool writeFile(const std::string &path, VecOfVecd &wellTrajectory);
 };
 

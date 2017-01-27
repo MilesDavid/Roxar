@@ -1,12 +1,8 @@
 #include "WellTrajectory.h"
 
-WellTrajectory::WellTrajectory()
-{
-}
+WellTrajectory::WellTrajectory(){}
 
-WellTrajectory::~WellTrajectory()
-{
-}
+WellTrajectory::~WellTrajectory(){}
 
 VecOfVecd WellTrajectory::parseFile(const std::string &path, const std::string &delims)
 {
@@ -18,13 +14,13 @@ VecOfVecd WellTrajectory::parseFile(const std::string &path, const std::string &
 
 	while (std::getline(fs, line)) {
 		if (line[0] != '#') {
-			std::vector<std::string> nums;
+			Vecs nums;
 			boost::split(nums, line, boost::is_any_of(delims));
 
-			std::vector<std::string>::iterator it = nums.begin();
+			Vecs::iterator it = nums.begin();
 			const int cols = 3;
 			int count = 0;
-			std::vector<double> tmp_survey;
+			Vecd tmp_survey;
 
 			for (it; it != nums.end(); it++) {
 				if (count == cols) break;
@@ -57,8 +53,8 @@ VecOfVecd WellTrajectory::calculate(VecOfVecd &surveyData)
 	double MD1 = 0.0, WD1 = 0.0, AZ1 = 0.0;
 	double North1 = 0.0, East1 = 0.0, TVD1 = 0.0;
 
-	std::vector<std::vector<double>> result;
-	std::vector<std::vector<double>>::iterator it = surveyData.begin();
+	VecOfVecd result;
+	VecOfVecd::iterator it = surveyData.begin();
 
 	for (it; it != surveyData.end(); it++) {
 		double MD2 = (*it)[0], WD2 = (*it)[1], AZ2 = (*it)[2];
@@ -80,7 +76,7 @@ VecOfVecd WellTrajectory::calculate(VecOfVecd &surveyData)
 		MD1 = MD2; WD1 = WD2; AZ1 = AZ2;
 		North1 = North2; East1 = East2; TVD1 = TVD2;
 
-		std::vector<double> tmp;
+		Vecd tmp;
 		tmp.push_back(TVD2);
 		tmp.push_back(North2);
 		tmp.push_back(East2);
@@ -91,8 +87,20 @@ VecOfVecd WellTrajectory::calculate(VecOfVecd &surveyData)
 	return result;
 }
 
-void WellTrajectory::writeFile(const std::string &path, VecOfVecd &wellTrajectory)
+bool WellTrajectory::writeFile(const std::string &path, VecOfVecd &wellTrajectory)
 {
+	FILE* fp = fopen(path.c_str(), "w");
+	if (fp == NULL)
+		return false;
+
+	fprintf_s(fp, "#%+9.10s%+10.10s%+10.10s\n", "TVD", "North", "East");
+	VecOfVecd::iterator it = wellTrajectory.begin();
+	for (it; it != wellTrajectory.end(); it++)
+		fprintf_s(fp, "%10.2f%10.2f%10.2f\n", (*it)[0], (*it)[1], (*it)[2]);
+
+	fclose(fp);
+
+	return true;
 }
 
 
