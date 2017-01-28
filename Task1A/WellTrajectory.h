@@ -1,18 +1,7 @@
 #pragma once
 #define _USE_MATH_DEFINES
 
-#include <cmath>
-#include <cstdio>
-
-#include <vector>
-#include <fstream>
-#include <string>
-
-#include <boost\algorithm\string.hpp>
-
-typedef std::vector<std::string> Vecs;
-typedef std::vector<double> Vecd;
-typedef std::vector<std::vector<double>> VecOfVecd;
+#include "misc.h"
 
 /*
 	This class calculates well trajectory by survey deviation data.
@@ -21,12 +10,15 @@ typedef std::vector<std::vector<double>> VecOfVecd;
 
 class WellTrajectory
 {
-public:
+private:
 	WellTrajectory();
 	~WellTrajectory();
+public:
 
-	static VecOfVecd parseFile(const std::string &path, const std::string &delims="\t :");
+	/* Calculate well trajectory by survey deviation data using balanced tangential method */
 	static VecOfVecd calculate(VecOfVecd &surveyData);
+
+	/* writes to file well trajectory in format: TVD North East */
 	static bool writeFile(const std::string &path, VecOfVecd &wellTrajectory);
 };
 

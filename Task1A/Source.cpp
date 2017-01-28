@@ -1,21 +1,38 @@
-#define _USE_MATH_DEFINES
+#pragma once
 #define MAX_ARGS 3
 
-#define WAIT_USER char ch; std::cout << "Press any key, then Enter key.."; std::cin >> ch;
+/*
+	1) Computational geometry
+		A) Point in polygon
+		Write a command line utility that inputs two files:
 
-#include <iostream>
+		File1: polygon data
+		X1 Y1
+		X2 Y2
+		…
 
-#include <boost/filesystem.hpp>
+		File2: points
+		“Point1” X1 Y1
+		“Point2” X2 Y2
+		…
 
-#include "WellTrajectory.h"
+		Utility should outputs points inside the polygon.
+		Columns in files are separated with: colon, space or tab symbols (all separators are legal simultaneously).
+*/
 
-int main(int argc, char* argv[]) {
-	boost::filesystem::path p(argv[0]);
+#include "misc.h"
+#include "Parser.h"
+#include "GeometryWrapper.h"
+#include "FilesystemWrapper.h"
 
-	std::string help = "Usage:\n\t" + p.filename().string() + " input_file output_file\n\n";
+int main(int argc, char* argv[]){
+	//boost::filesystem::path p(argv[0]);
+	Path p(argv[0]);
+
+	std::string help = "Usage:\n\t" + p.filename().string() + " input_file\n\n";
 	help += "positional arguments:\n";
-	help += "\tinput_file\t\tPath to input file with survey deviation data\n";
-	help += "\toutput_file\t\tPath to output file with well trajectory\n\n";
+	help += "\tinput_file\t\tPath to polygon vertices file\n";
+	help += "\toutput_file\t\tPath to points file\n\n";
 
 	if (argc != MAX_ARGS) {
 		std::cout << help;
@@ -23,37 +40,46 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-	std::string inputPath = argv[1];
-	std::string outputPath = argv[2];
-
-	if (boost::filesystem::is_directory(inputPath)){
+	std::string polygonVertexFilePath = argv[1];
+	if (FilesystemWrapper::PathIsDir(polygonVertexFilePath)){
 		std::cout << "Error during reading file.. You're tried read directory, not a file!\n";
-		return 1;
-	}
-
-	if (!boost::filesystem::exists(inputPath)){
-		boost::filesystem::path p(inputPath);
-		std::cout << "Error during reading file " << p.filename() << " from " << p.parent_path() 
-			<< ".. File is not exists!";
 		WAIT_USER
 		return 1;
 	}
 
-	VecOfVecd data = WellTrajectory::parseFile(inputPath);
-	VecOfVecd wellTrajectory = WellTrajectory::calculate(data);
-
-	if (!WellTrajectory::writeFile(outputPath, wellTrajectory)){
-		boost::filesystem::path p(outputPath);
-
-		if (boost::filesystem::is_directory(outputPath)){
-			std::cout << "Error during writing to file.. You're tried write to directory, not a file!\n";
-			WAIT_USER
-			return 1;
-		}
-
-		std::cout << "Error during writing to file " << p.filename() << ".. "
-			<< "Maybe, your user haven't permissions to write in " << p.parent_path() << "?\n";
+	if (!FilesystemWrapper::PathExists(polygonVertexFilePath)){
+		Path p(polygonVertexFilePath);
+		std::cout << "Error during reading file " << p.filename() << " from " << p.parent_path() 
+			<< ".. File is not exists!\n";
+		WAIT_USER
+		return 1;
 	}
+
+	std::string pointsFilePath = argv[2];
+	if (FilesystemWrapper::PathIsDir(pointsFilePath)){
+		std::cout << "Error during reading file.. You're tried read directory, not a file!\n";
+		WAIT_USER
+		return 1;
+	}
+
+	if (!FilesystemWrapper::PathExists(pointsFilePath)){
+		Path p(pointsFilePath);
+		std::cout << "Error during reading file " << p.filename() << " from " << p.parent_path() 
+			<< ".. File is not exists!\n";
+		WAIT_USER
+		return 1;
+	}
+
+	VecPoint2D polygonVertices = Parser::parseFile(polygonVertexFilePath, "\t :");
+	VecPoint2D points = Parser::parseFile(pointsFilePath, "\t :");
+
+	VecPoint2D pointsInPolygon = GeometryWrapper::PointsInPolygon(&polygonVertices, &points);
+	if (pointsInPolygon.size() != 0){
+		printf_s("\nPoints in polygon:\n");
+		GeometryWrapper::PrintPoints(&pointsInPolygon);
+	}
+	else
+		printf_s("\nPolygon is not contains points..\n");
 
 	WAIT_USER
 	return 0;

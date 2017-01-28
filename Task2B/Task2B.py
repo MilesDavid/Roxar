@@ -22,8 +22,8 @@ import lasparser
 if __name__ == '__main__':
     try:
         argParser = argparse.ArgumentParser(description='Program for parsing *.las file.')
-
-	     #  args
+        
+        #  args
         argParser.add_argument('PATH', type=str, action='store', nargs=1, help='Path to *.las files.')
         argParser.add_argument('-W', '--WELLS',action='store_true', help='List all distinct wells in these files')
         argParser.add_argument('-F', '--OIL_FIELDS', action='store_true', help='List all distinct oil fields in these files')

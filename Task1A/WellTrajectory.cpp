@@ -1,53 +1,19 @@
 #include "WellTrajectory.h"
 
+#include <cmath>
+#include <cstdio>
+
 WellTrajectory::WellTrajectory(){}
 
 WellTrajectory::~WellTrajectory(){}
 
-VecOfVecd WellTrajectory::parseFile(const std::string &path, const std::string &delims)
-{
-	std::fstream fs;
-	fs.open(path, std::ios::in);
-
-	std::string line;
-	VecOfVecd survey;
-
-	while (std::getline(fs, line)) {
-		if (line[0] != '#') {
-			Vecs nums;
-			boost::split(nums, line, boost::is_any_of(delims));
-
-			Vecs::iterator it = nums.begin();
-			const int cols = 3;
-			int count = 0;
-			Vecd tmp_survey;
-
-			for (it; it != nums.end(); it++) {
-				if (count == cols) break;
-				try {
-					double temp = std::stof(*it);
-					tmp_survey.push_back(temp);
-					count++;
-				}
-				catch (const std::exception&) {}
-			}
-
-			survey.push_back(tmp_survey);
-		}
-	}
-
-	fs.close();
-
-	return survey;
-}
-
 VecOfVecd WellTrajectory::calculate(VecOfVecd &surveyData)
 {
 	/*
-	Balanced tangential method
-	North = SUM(MD2 - MD1) * ((Sin WD1 * Cos HAZ1 + Sin WD2 * Cos HAZ2) / 2)
-	East = SUM(MD2 - MD1) * ((Sin WD1 * Sin HAZ1 + Sin WD2 * Sin HAZ2) / 2)
-	TVD = SUM((MD2 - MD1) * (Cos WD2 + Cos WD1) / 2)
+		Balanced tangential method
+		North = SUM(MD2 - MD1) * ((Sin WD1 * Cos HAZ1 + Sin WD2 * Cos HAZ2) / 2)
+		East = SUM(MD2 - MD1) * ((Sin WD1 * Sin HAZ1 + Sin WD2 * Sin HAZ2) / 2)
+		TVD = SUM((MD2 - MD1) * (Cos WD2 + Cos WD1) / 2)
 	*/
 
 	double MD1 = 0.0, WD1 = 0.0, AZ1 = 0.0;
@@ -89,8 +55,13 @@ VecOfVecd WellTrajectory::calculate(VecOfVecd &surveyData)
 
 bool WellTrajectory::writeFile(const std::string &path, VecOfVecd &wellTrajectory)
 {
-	FILE* fp = fopen(path.c_str(), "w");
-	if (fp == NULL)
+	if (wellTrajectory.size() == 0)
+		return false;
+
+	FILE* fp = NULL;
+	errno_t err = fopen_s(&fp, path.c_str(), "w");
+
+	if (err != 0)
 		return false;
 
 	fprintf_s(fp, "#%+9.10s%+10.10s%+10.10s\n", "TVD", "North", "East");
