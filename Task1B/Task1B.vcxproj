@@ -72,7 +72,7 @@
     <OutDir>$(SolutionDir)_Bin\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
     <IntDir>$(SolutionDir)_Temp\$(ProjectName)\$(Configuration)\$(Platform)</IntDir>
     <IncludePath>$(boost);$(IncludePath)</IncludePath>
-    <LibraryPath>$(boost);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(boost)\lib32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -83,7 +83,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionName)_Bin\$(ProjectName)\$(Configuration)\$(PlatformName)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)_Bin\CoreLib\$(Configuration)\$(PlatformName)</AdditionalLibraryDirectories>
       <AdditionalDependencies>CoreLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

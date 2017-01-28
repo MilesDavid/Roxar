@@ -53,13 +53,14 @@
     <OutDir>$(SolutionDir)_Bin\$(ProjectName)\$(Configuration)\$(PlatformName)</OutDir>
     <IntDir>$(SolutionDir)_Temp\$(ProjectName)\$(Configuration)\$(PlatformName)</IntDir>
     <IncludePath>$(boost);$(IncludePath)</IncludePath>
-    <LibraryPath>$(boost);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(boost)\lib32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

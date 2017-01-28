@@ -3,7 +3,8 @@
 
 #include "misc.h"
 #include "Parser.h"
-//#include "
+#include "GeometryWrapper.h"
+#include "FilesystemWrapper.h"
 
 /*
 	1) Computational geometry
@@ -20,7 +21,7 @@
 */
 
 int main(int argc, char* argv[]){
-	boost::filesystem::path p(argv[0]);
+	Path p(argv[0]);
 
 	std::string help = "Usage:\n\t" + p.filename().string() + " input_file\n\n";
 	help += "positional arguments:\n";
@@ -33,19 +34,23 @@ int main(int argc, char* argv[]){
 	}
 
 	std::string polygonVertexFilePath = argv[1];
-	if (boost::filesystem::is_directory(polygonVertexFilePath)){
+	if (FilesystemWrapper::PathIsDir(polygonVertexFilePath)){
 		std::cout << "Error during reading file.. You're tried read directory, not a file!\n";
 		WAIT_USER
 		return 1;
 	}
 
-	if (!boost::filesystem::exists(polygonVertexFilePath)){
-		boost::filesystem::path p(polygonVertexFilePath);
+	if (!FilesystemWrapper::PathExists(polygonVertexFilePath)){
+		Path p(polygonVertexFilePath);
 		std::cout << "Error during reading file " << p.filename() << " from " << p.parent_path() 
 			<< ".. File is not exists!\n";
 		WAIT_USER
 		return 1;
 	}
+
+	VecPoint2D polygonVetices = Parser::parseFile(polygonVertexFilePath, "\t :");
+
+	printf_s("\nPolygon area: %10.2f\n", GeometryWrapper::PolygonArea(&polygonVetices));
 
 	WAIT_USER
 	return 0;

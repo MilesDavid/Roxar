@@ -72,8 +72,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)_Bin\$(ProjectName)\$(Configuration)\$(Platform)</OutDir>
     <IntDir>$(SolutionDir)_Temp\$(ProjectName)\$(Configuration)\$(Platform)</IntDir>
-    <IncludePath>__F:\develop\boost_1_61_0;__$(boost);$(IncludePath)</IncludePath>
-    <LibraryPath>__F:\develop\boost_1_61_0/lib32;__$(boost)/lib32;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(boost);$(IncludePath)</IncludePath>
+    <LibraryPath>$(boost)/lib32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
