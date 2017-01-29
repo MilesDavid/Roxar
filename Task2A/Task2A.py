@@ -1,5 +1,6 @@
-from welltraject import welltraject as wt
+ï»¿from welltraject import welltraject as wt
 import sys
+import os
 
 # A) Make well trajectory from deviation survey data.
         # Write a command line utility that inputs deviation survey data (text file) with structure:
@@ -27,12 +28,39 @@ import sys
         # Utility should produce trajectory text file:
             # Column 1 -TVD
             # Column 2 -DX
-            # Column 3 ??DY
+            # Column 3 -DY
+
+def printHelpAndExit(error=''):
+    if error: print(error)
+    res = 'Description:\n\tCalculates well trajectory by survey deviation data using balanced tangential method\n\n'
+    res += 'Usage:\n\t{} input_file output_file\n\n'.format(os.path.basename(sys.argv[0]))
+    res += 'positional arguments:\n'
+    res += '\tinput_file\t\tPath to survey data file\n'
+    res += '\toutput_file\t\tPath to well trajectory file\n'
+    print(res)
+    input('Press any key to exit\n')
+    sys.exit()
 
 if __name__ == '__main__':
+    try:
+        MAX_ARGS = 3
+        if len(sys.argv) != MAX_ARGS:
+            printHelpAndExit()
 
-    path = 'C:\\Users\\borisov.LANAGENT\\Downloads\\???°???????µ\\Trajectory\\10958.txt'
+        if not os.path.isfile(sys.argv[1]):
+            printHelpAndExit('\nFile "{}" not found in "{}"..\n'.format(
+                os.path.basename(sys.argv[1]),
+                os.path.dirname(sys.argv[1]))
+            )
 
-    data = wt.parseFile(path)
-    traject = wt.calcWellTrajectory(data)
-    wt.writeToFile('.', data)
+        if not os.path.isdir(os.path.dirname(sys.argv[2])):
+            printHelpAndExit('\nDirectory "{}" not found..\n'.format(os.path.dirname(sys.argv[2])))
+            
+        inputFile = sys.argv[1]
+        outputFile = sys.argv[2]
+
+        data = wt.parseFile(inputFile)
+        traject = wt.calcWellTrajectory(data)
+        wt.writeToFile(outputFile, traject)
+    except SystemExit:
+        pass

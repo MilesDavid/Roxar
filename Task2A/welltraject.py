@@ -1,10 +1,13 @@
-import os
+﻿import os
 import re
 import sys
 import math
 
 class welltraject(object):
-    """description of class"""
+    """
+        This class calculates well trajectory by survey deviation data.
+	    Class uses for calculations balanced tangential method.
+    """
 
     # Returns list of [MD, Angle, Azimuth]
     @staticmethod
@@ -15,17 +18,10 @@ class welltraject(object):
             with open(path) as f:
                 for line in f:
                     if not re.match(r'^#.*$', line):
-                        tmp = []
-                        count = 0
-                        for elem in re.split(r'\s|:', line):
-                            if count == columns: break
-                            try:
-                                tmp.append(float(elem))
-                                count += 1
-                            except ValueError:
-                                pass
-
-                        res.append(tmp)
+                        tmp = re.split(r':|\s+', line)
+                        tmp = list(filter(lambda x: x != '', tmp))
+                        tmp = [float(i) for i in tmp]
+                        res.append(tmp[:3])
 
         return res
 
@@ -68,18 +64,16 @@ class welltraject(object):
 
     # Writes well traject to file with header '# TVD North East'
     @staticmethod
-    def writeToFile(path, data, filename='WellTraject', ext='txt', offset=20):
-        if os.path.isdir(path):
-            pathTofile = os.path.join(path, filename + '.' + ext)
-            with open(pathTofile, 'w') as f:
-                commMask = '#{:>'+ str(offset - 1) +'}'
-                mask = '{:>'+ str(offset) +'}'
-                header = ['TVD', 'North', 'East']
+    def writeToFile(path, data, offset=20):
+        with open(path, 'w') as f:
+            commMask = '#{:>'+ str(offset - 1) +'}'
+            mask = '{:>'+ str(offset) +'}'
+            header = ['TVD', 'North', 'East']
 
-                f.write(commMask.format(header[0]))
-                for elem in [header[1:]] + data:
-                    for e in elem:
-                        f.write(mask.format(e))
-                    f.write('\n')
+            f.write(commMask.format(header[0]))
+            for elem in [header[1:]] + data:
+                for e in elem:
+                    f.write(mask.format(e))
+                f.write('\n')
 
 
